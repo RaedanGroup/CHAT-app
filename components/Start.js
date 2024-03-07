@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, ImageBackground } from 'react-native';
 
 const StartScreen = ({ navigation }) => {
   const [name, setName] = useState('');
+  const [color, setColor] = useState('#757083');
   const colorOptions = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
 
   return (
@@ -24,16 +25,16 @@ const StartScreen = ({ navigation }) => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[styles.colorOption, { backgroundColor: item }]}
-                  onPress={() => console.log("Selected color: ", item)}
-                />
+                  onPress={() => setColor(item)}
+                  />
               )}
               keyExtractor={(item) => item}
               horizontal
             />
           </View>
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('ChatScreen', { name: name })}
+            style={[styles.button, { backgroundColor: color }]}
+            onPress={() => navigation.navigate('ChatScreen', { name: name, color: color})}
           >
             <Text style={styles.buttonText}>Start chatting</Text>
           </TouchableOpacity>
@@ -69,8 +70,9 @@ const styles = StyleSheet.create({
     height: '44%',
     width: '100%',
     bottom: '6%',
-    backgroundColor: '#fff',
     padding: '6%',
+    backgroundColor: '#fff',
+    borderRadius: 5,
   },
   textInput: {
     width: '100%',
@@ -112,7 +114,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '6%',
     bottom: '6%',
-    backgroundColor: '#757083',
     padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
