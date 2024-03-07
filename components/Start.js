@@ -14,7 +14,7 @@ const StartScreen = ({ navigation }) => {
             style={styles.textInput}
             value={name}
             onChangeText={setName}
-            placeholder="Type your username here"
+            placeholder="Your Name"
           />
           <View style={styles.colorContainer}>
             <Text style={styles.label}>Choose background color:</Text>
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     padding: '6%',
   },
   title: {
-    position: 'absolute', // Position title absolutely within its parent
+    position: 'absolute',
     top: '15%',
     fontSize: 45,
     fontWeight: '600',
@@ -73,38 +73,37 @@ const styles = StyleSheet.create({
     padding: '6%',
   },
   textInput: {
-    width: '100%', // Adjust width to fill subContainer
+    width: '100%',
     paddingVertical: 20,
     paddingHorizontal: 15,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#757083',
     borderRadius: 5,
     fontSize: 16,
     fontWeight: '300',
     color: '#757083',
-    opacity: 1,
+    opacity: 0.5,
   },
   colorContainer: {
     width: '100%',
     position: 'absolute',
-    top: '45%',
+    top: '43%',
     left: '6%',
   },
   label: {
     fontSize: 16,
     fontWeight: '300',
     color: '#757083',
-    // alignItems: 'flex-start'
+    opacity: 1,
   },
   colorSamples: {
-    width: '100%', // Adjust width to fill subContainer
+    width: '100%',
     marginVertical: 15,
-    // alignContent: 'flex-start',
   },
   colorOption: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     marginHorizontal: 10,
   },
   button: {
