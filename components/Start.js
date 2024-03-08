@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, ImageBackground, Platform, Keyboard } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, ImageBackground, Platform, Keyboard, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const StartScreen = ({ navigation }) => {
@@ -18,9 +18,9 @@ const StartScreen = ({ navigation }) => {
         setsubContainerBottom(0);
         setsubContainerHeight('80%')
       } else {
-        if (Platform.OS === 'ios') {
-          setsubContainerBottom('20%');
-        }
+        // if (Platform.OS === 'ios') {
+        //   setsubContainerBottom('20%');
+        // }
       }
     });
 
@@ -73,9 +73,14 @@ const StartScreen = ({ navigation }) => {
           <TouchableOpacity // Add the start chatting button and pass the name and color to the ChatScreen
             style={[styles.button, { backgroundColor: color }]}
             onPress={() => navigation.navigate('ChatScreen', { name: name, color: color})}
+            accessible={true} // Add accessibility to the button
+            accessibilityLabel="Start chatting"
+            accessibilityHint="Navigates to the chat screen"
+            accessibilityRole='button'
           >
             <Text style={styles.buttonText}>Start chatting</Text>
           </TouchableOpacity>
+          { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="padding" /> : null }
         </View>
       </View>
     </ImageBackground>
