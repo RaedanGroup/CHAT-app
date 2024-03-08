@@ -7,30 +7,26 @@ const StartScreen = ({ navigation }) => {
   const [color, setColor] = useState('#757083');
   const colorOptions = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
 
-  // Initial bottom padding and height of the subContainer
-  const [subContainerBottom, setsubContainerBottom] = useState('6%');
+  // Initial top margin and height of the subContainer
+  const [subContainerTopMargin, setsubContainerTopMargin] = useState(null);
   const [subContainerHeight, setsubContainerHeight] = useState('44%');
 
-  // Add listeners to the keyboard to adjust the subContainer when the keyboard is shown or hidden based on the platform
+  // Add listeners to the keyboard to adjust the subContainer when the keyboard is shown or hidden for Android
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
       if (Platform.OS === 'android') {
-        setsubContainerBottom(0);
-        setsubContainerHeight('80%')
-      } else {
-        // if (Platform.OS === 'ios') {
-        //   setsubContainerBottom('20%');
-        // }
+        setsubContainerTopMargin(150);
+        setsubContainerHeight(400)
       }
     });
 
     // Add listener to keyboardDidHide event to restore the subContainer to originial state when the keyboard is hidden
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setsubContainerBottom('6%');
+      setsubContainerTopMargin(null);
       setsubContainerHeight('44%')
     });
 
-    // Clean up the listeners
+    // Clean up listeners when the component unmounts
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -39,10 +35,17 @@ const StartScreen = ({ navigation }) => {
   
   return (
     <ImageBackground source={require('../assets/Background-Image.png')} style={styles.backgroundImage}>
-      <View style={styles.container}>
+      {/* Add KeyboardAvoidingView to handle the keyboard for iOS */}
+      <KeyboardAvoidingView 
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined} 
+        keyboardVerticalOffset={Platform.OS === "ios" ? -160 : 0}
+      >
         <Text style={styles.title}>Native Chat</Text>
+        {/* Add a view to push the subContainer to the bottom of the screen */}
+        <View style={{flexGrow: 1}}></View>
         {/* Add dynamic styles to the subContainer based on keyboard events */}
-        <View style={[styles.subContainer, { bottom: subContainerBottom }, { height: subContainerHeight}]}>
+        <View style={[styles.subContainer, { marginTop: subContainerTopMargin }, { height: subContainerHeight}]}> 
           <View style={styles.inputContainer}>
             {/* Add the icon for the textbox */}
             <Icon name="person-outline" size={28} color="#757083" style={styles.inputIcon} />
@@ -80,9 +83,8 @@ const StartScreen = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Start chatting</Text>
           </TouchableOpacity>
-          { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="padding" /> : null }
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
@@ -95,26 +97,25 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     height: '100%',
     padding: '6%',
   },
   title: {
-    position: 'absolute',
-    top: '15%',
+    marginTop: '30%',
     fontSize: 45,
     fontWeight: '600',
     color: '#fff',
   },
   subContainer: {
-    position: 'absolute',
     height: '44%',
     width: '100%',
     padding: '6%',
     backgroundColor: '#fff',
     borderRadius: 5,
+    marginBottom: Platform.select({ ios: 30, android: 0 }), // Add margin bottom for iOS
   },
   inputContainer: {
     flexDirection: 'row',
