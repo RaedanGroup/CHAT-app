@@ -5,6 +5,8 @@ import ChatScreen from './components/Chat';
 // import react Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+// import firestore database from firebaseConfig
+import { db } from './components/firebaseConfig';
 
 // Create the navigator
 const Stack = createNativeStackNavigator();
@@ -20,9 +22,10 @@ const App = () => {
           component={StartScreen}
         />
         <Stack.Screen
-          name="ChatScreen"
-          component={ChatScreen}
-        />
+          name="ChatScreen">
+            {/* Pass the db object to the ChatScreen */}
+            {props => <ChatScreen {...props} db={db} />}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

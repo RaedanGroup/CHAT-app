@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, ImageBackground, Platform, Keyboard, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { getAuth, signInAnonymously } from "firebase/auth";
+
 
 const StartScreen = ({ navigation }) => {
+  const auth = getAuth();
   const [name, setName] = useState('');
   const [color, setColor] = useState('#757083');
   const colorOptions = ['#090C08', '#474056', '#8A95A5', '#B9C6AE'];
@@ -32,6 +35,22 @@ const StartScreen = ({ navigation }) => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then((result) => {
+        const user = result.user;
+        // If there's a user logged in, navigate to ChatScreen
+        navigation.navigate('ChatScreen', {
+          userId: user.uid, // User's id
+          name: name, // User's name entered in the TextInput
+          color: color, // Selected background color
+        });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
   
   return (
     <ImageBackground source={require('../assets/Background-Image.png')} style={styles.backgroundImage}>
@@ -75,7 +94,8 @@ const StartScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity // Add the start chatting button and pass the name and color to the ChatScreen
             style={[styles.button, { backgroundColor: color }]}
-            onPress={() => navigation.navigate('ChatScreen', { name: name, color: color})}
+            // onPress={() => navigation.navigate('ChatScreen', { name: name, color: color})}
+            onPress={signInUser} // Use signInUser here
             accessible={true} // Add accessibility to the button
             accessibilityLabel="Start chatting"
             accessibilityHint="Navigates to the chat screen"
