@@ -3,20 +3,25 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 // import GiftedChat and Bubble
-import { GiftedChat, Bubble,InputToolbar } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 // import the firestore functions
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp  } from "firebase/firestore";
 // import AsyncStorage to cache messages
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import the CustomActions component to handle the image picker, camera, and location
 import CustomActions from './CustomActions';
+// import MapView to display the location in the chat
+import MapView from 'react-native-maps';
 
 
 // Create the ChatScreen component
-const ChatScreen = ({ route, navigation, db, isConnected }) => {
+const ChatScreen = ({ route, navigation, db, isConnected, storage }) => {
   const { userId, name, color } = route.params;
   const [messages, setMessages] = useState([]);
   
+  // makes unsubscribe available to the whole component
+  let unsubscribe;
+
   // Load cached messages from AsyncStorage
   const loadCachedMessages = async () => {
     try {
@@ -28,27 +33,22 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
     }
   };
 
-  // makes unsubscribe available to the whole component
-  let unsubscribe;
-
   useEffect(() => {
     navigation.setOptions({ title: name });
     if (isConnected === true) {
-      // unregister current onSnapshot() listener to avoid registering multiple listeners when useEffect code is re-executed.
       if (unsubscribe) unsubscribe();
       unsubscribe = null;
-      // Get the messages collection
       const messagesRef = collection(db, "messages");
-      const q = query(messagesRef, orderBy("createdAt", "desc"));
-      // use onSnapshot() to listen for changes to the messages collection
-      unsubscribe = onSnapshot(q, async (snapshot) => {
-        // Get the messages from the snapshot
-        const firebaseMessages = snapshot.docs.map(doc => ({
-          _id: doc.id,
-          text: doc.data().text,
-          createdAt: doc.data().createdAt ? doc.data().createdAt.toDate() : new Date(), // Fallback to new Date if null
-          user: doc.data().user,
-        }));
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        const firebaseMessages = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            _id: doc.id,
+            ...data, // Spread all fields from the document data
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          };
+        });
         cacheMessages(firebaseMessages);
         setMessages(firebaseMessages);
       });
@@ -69,12 +69,8 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
     }
   };
 
-  const onSend = (newMessages = []) => {
-    const messageToAdd = { ...newMessages[0], createdAt: serverTimestamp() };
-    addDoc(collection(db, "messages"), messageToAdd)
-      .then(docRef => {
-        console.log("Document written with ID: ", docRef.id);
-      })
+  const onSend = (newMessages) => {
+    addDoc(collection(db, "messages"), newMessages[0])
       .catch(error => {
         console.error("Error adding document: ", error);
       });
@@ -97,7 +93,31 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
    }
 
   const renderCustomActions = (props) => {
-    return <CustomActions {...props} />;
+    return <CustomActions storage={storage} {...props} />;
+  };
+
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+
+    // log the currentMessage to the console to confirm the location
+    // console.log('Current Message Location:', currentMessage.location);
+
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 6 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          scrollEnabled={false}
+          zoomEnabled={false}
+        />
+      );
+    }
+    return null;
   };
 
  return (
@@ -107,6 +127,7 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
       renderBubble={renderBubble}
       renderInputToolbar={renderInputToolbar}
       renderActions={renderCustomActions}
+      renderCustomView={renderCustomView}
       onSend={messages => onSend(messages)}
       user={{
         _id: userId, // Use the extracted 'userId' for _id
