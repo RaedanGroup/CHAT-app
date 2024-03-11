@@ -1,3 +1,5 @@
+// ./components/Start.js
+
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, ImageBackground, Platform, Keyboard, KeyboardAvoidingView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';

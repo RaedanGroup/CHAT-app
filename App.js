@@ -1,3 +1,5 @@
+// ./App.js
+
 import { StyleSheet, Alert } from 'react-native';
 import { useEffect } from 'react';
 // import the screens

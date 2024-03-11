@@ -1,3 +1,5 @@
+// ./components/Chat.js
+
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 // import GiftedChat and Bubble
@@ -6,6 +8,8 @@ import { GiftedChat, Bubble,InputToolbar } from "react-native-gifted-chat";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp  } from "firebase/firestore";
 // import AsyncStorage to cache messages
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// import the CustomActions component to handle the image picker, camera, and location
+import CustomActions from './CustomActions';
 
 
 // Create the ChatScreen component
@@ -23,7 +27,7 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
       console.log("Failed to load messages from cache", error.message);
     }
   };
-  
+
   // makes unsubscribe available to the whole component
   let unsubscribe;
 
@@ -92,20 +96,25 @@ const ChatScreen = ({ route, navigation, db, isConnected }) => {
     else return null;
    }
 
+  const renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
  return (
   <View style={[styles.container, { backgroundColor: color }]}>
-  <GiftedChat
-    messages={messages}
-    renderBubble={renderBubble}
-    renderInputToolbar={renderInputToolbar}
-    onSend={messages => onSend(messages)}
-    user={{
-      _id: userId, // Use the extracted 'userId' for _id
-      name: name, // Use the extracted 'name'
-    }}
-  />
-  { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
-</View>
+    <GiftedChat
+      messages={messages}
+      renderBubble={renderBubble}
+      renderInputToolbar={renderInputToolbar}
+      renderActions={renderCustomActions}
+      onSend={messages => onSend(messages)}
+      user={{
+        _id: userId, // Use the extracted 'userId' for _id
+        name: name, // Use the extracted 'name'
+      }}
+    />
+    { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
+  </View>
  );
 }
 
