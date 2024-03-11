@@ -76,16 +76,18 @@ const ChatScreen = ({ route, navigation, db, isConnected, storage }) => {
       });
   };
 
-  const renderBubble = (props) => {
-    return <Bubble {...props} wrapperStyle={{
-      right: {
-        backgroundColor: "#000"
-      },
-      left: {
-        backgroundColor: "#FFF"
-      }
-    }}/>
-  }
+  const renderBubble = (props) => (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        right: { backgroundColor: "#0084ff" },
+        left: { backgroundColor: "#e6e6e6" },
+      }}
+      accessible={true}
+      accessibilityLabel="Message Bubble"
+      accessibilityHint={`Message from ${props.currentMessage.user.name}`}
+    />
+  );
 
   const renderInputToolbar = (props) => {
     if (isConnected) return <InputToolbar {...props} />;

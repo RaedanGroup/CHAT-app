@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
+const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, id }) => {
 
   const actionSheet = useActionSheet();
 
@@ -34,6 +34,18 @@ const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
       },
     );
   };
+
+  // Upload the image to Firebase Storage
+  const uploadAndSendImage = async (imageURI) => {
+    const uniqueRefString = generateReference(imageURI); 
+    const newUploadRef = ref(storage, uniqueRefString);
+    const response = await fetch(imageURI);
+    const blob = await response.blob();
+    uploadBytes(newUploadRef, blob).then(async (snapshot) => {
+        const imageURL = await getDownloadURL(snapshot.ref);
+        onSend({ image: imageURL});
+    });
+  }
 
   // Pick an image from the device's library
   const pickImage = async () => {
@@ -78,21 +90,15 @@ const CustomActions = ({ wrapperStyle, iconTextStyle, onSend }) => {
       return `${id}-${timeStamp}-${imageName}`;
   }
 
-  // Upload the image to Firebase Storage
-  const uploadAndSendImage = async (imageURI) => {
-      const uniqueRefString = generateReference(imageURI); 
-      const newUploadRef = ref(storage, uniqueRefString);
-      const response = await fetch(imageURI);
-      const blob = await response.blob();
-      uploadBytes(newUploadRef, blob).then(async (snapshot) => {
-          const imageURL = await getDownloadURL(snapshot.ref);
-          onSend({ image: imageURL});
-      });
-  }
-
   return (
     <TouchableOpacity style={styles.container} onPress={onActionPress}>
-      <View style={[styles.wrapper, wrapperStyle]}>
+      <View 
+      style={[styles.wrapper, wrapperStyle]}
+      accessible={true} // Add accessibility to the button
+      accessibilityLabel="Upload an image or your location"
+      accessibilityHint="Allows you to choose an image from your library, take a photo, or send your location"
+      accessibilityRole='button'
+      >
         <Text style={[styles.iconText, iconTextStyle]}>+</Text>
       </View>
     </TouchableOpacity>
@@ -118,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     backgroundColor: 'transparent',
     textAlign: 'center',
-    top: -2,
+    top: -4,
   },
 });
 
