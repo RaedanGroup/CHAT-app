@@ -69,6 +69,7 @@ const ChatScreen = ({ route, navigation, db, isConnected, storage }) => {
     }
   };
 
+  // Add messages to Firestore
   const onSend = (newMessages) => {
     addDoc(collection(db, "messages"), newMessages[0])
       .catch(error => {
@@ -76,6 +77,7 @@ const ChatScreen = ({ route, navigation, db, isConnected, storage }) => {
       });
   };
 
+  // Render a custom chat bubble
   const renderBubble = (props) => (
     <Bubble
       {...props}
@@ -89,21 +91,20 @@ const ChatScreen = ({ route, navigation, db, isConnected, storage }) => {
     />
   );
 
+  // Render the input toolbar only if the user is connected
   const renderInputToolbar = (props) => {
     if (isConnected) return <InputToolbar {...props} />;
     else return null;
    }
 
+  // Render the custom actions (image picker, camera, location)
   const renderCustomActions = (props) => {
     return <CustomActions storage={storage} {...props} />;
   };
 
+  // Render the custom view for the MapView
   const renderCustomView = (props) => {
     const { currentMessage } = props;
-
-    // log the currentMessage to the console to confirm the location
-    // console.log('Current Message Location:', currentMessage.location);
-
     if (currentMessage.location) {
       return (
         <MapView

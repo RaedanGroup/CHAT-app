@@ -1,6 +1,13 @@
 // ./components/firebaseConfig.js
-// This file is used to initialize the Firebase app and export the db object to be used in other components.
+
+// This file is used to initialize the Firebase app and export the db, auth, and storage objects to be used in other components.
+
 // The db object is used to access the Firestore database.
+
+// The storage object is used to access the Firebase Storage service.
+
+// The auth object is not used elsewhere in this project, but it is included in the export for any future use.
+// It is used here to access the Firebase Authentication to maintain user authentication state between app restarts.
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -8,6 +15,7 @@ import { getStorage } from "firebase/storage";
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
+// Update with your own Firebase config details for a new project
 const firebaseConfig = {
   apiKey: "AIzaSyAqoTc0kMhQ_bpVW7tzTUHFjtRX4TXFzqw",
   authDomain: "native-chat-14621.firebaseapp.com",

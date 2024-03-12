@@ -96,8 +96,7 @@ const StartScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity // Add the start chatting button and pass the name and color to the ChatScreen
             style={[styles.button, { backgroundColor: color }]}
-            // onPress={() => navigation.navigate('ChatScreen', { name: name, color: color})}
-            onPress={signInUser} // Use signInUser here
+            onPress={signInUser}
             accessible={true} // Add accessibility to the button
             accessibilityLabel="Start chatting"
             accessibilityHint="Navigates to the chat screen"

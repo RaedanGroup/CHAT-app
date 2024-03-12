@@ -8,7 +8,7 @@ import ChatScreen from './components/Chat';
 // import react Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import firestore database from firebaseConfig
+// import firestore database and storage from firebaseConfig
 import { db, storage } from './components/firebaseConfig';
 // import the useNetInfo hook to check for network status
 import { useNetInfo }from '@react-native-community/netinfo';
@@ -42,7 +42,7 @@ const App = () => {
         />
         <Stack.Screen
           name="ChatScreen">
-            {/* Pass the db object and connection status to the ChatScreen */}
+            {/* Pass the db object, connection status, and storage to the ChatScreen */}
             {props => <ChatScreen {...props} db={db} isConnected={connectionStatus.isConnected} storage={storage} />}
         </Stack.Screen>
       </Stack.Navigator>
